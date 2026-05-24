@@ -50,6 +50,24 @@ npm run build
 npm run start
 ```
 
+## 一键部署到服务器(Ubuntu 22.04/24.04)
+
+在服务器上克隆仓库后,进入项目目录执行:
+
+```bash
+git clone https://github.com/dawn17521/dawn17521.git app
+cd app
+git checkout claude/serene-sagan-iYz6T
+bash deploy.sh
+```
+
+`deploy.sh` 会自动安装 Node/git/nginx、生成 `.env`(随机 `JWT_SECRET`,
+`COOKIE_SECURE=false` 以便先用 IP 走 HTTP 访问)、安装依赖、迁移数据库、构建、
+用 pm2 常驻并配置 Nginx 反向代理到 80 端口。完成后用 `http://服务器IP` 即可访问。
+
+> 记得在云服务商控制台的安全组放行 **80** 端口。配好域名与 HTTPS 后,把 `.env`
+> 的 `COOKIE_SECURE` 改回 `true` 并重新执行 `bash deploy.sh`。
+
 ## 关于支付(请阅读)
 
 真实扣款需要在各支付平台注册**商户账号**并获取 API 密钥:
