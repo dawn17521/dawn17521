@@ -50,10 +50,18 @@ export async function verifySession(
   }
 }
 
+function cookieSecure(): boolean {
+  // Allow serving over plain HTTP (e.g. by IP before HTTPS is set up) by
+  // setting COOKIE_SECURE=false. Defaults to secure cookies in production.
+  if (process.env.COOKIE_SECURE === "false") return false;
+  if (process.env.COOKIE_SECURE === "true") return true;
+  return process.env.NODE_ENV === "production";
+}
+
 export async function setSessionCookie(token: string) {
   cookies().set(AUTH_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: cookieSecure(),
     sameSite: "lax",
     path: "/",
     maxAge: ONE_WEEK,
