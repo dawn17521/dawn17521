@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String?   @unique
+  phone     String?   @unique
+  password  String
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  // Day of the reservation, stored as YYYY-MM-DD for easy querying.
+  date          String
+  // Inclusive start hour and exclusive end hour, in 24h format (8..24).
+  startHour     Int
+  endHour       Int
+  status        String   @default("PENDING") // PENDING | PAID | CANCELLED
+  amount        Int // total price in the smallest currency display unit (whole units here)
+  currency      String   @default("CNY")
+  paymentMethod String?
+  paymentRef    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([date, status])
+}
